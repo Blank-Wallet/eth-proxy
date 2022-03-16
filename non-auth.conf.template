@@ -1,41 +1,32 @@
-upstream rpc_backend {
-    server ${RPC_ENDPOINT} fail_timeout=5s max_fails=3;
-    server ${RPC_ENDPOINT_FAILOVER} backup;
-}
-
-upstream ws_backend{
-    server ${WS_ENDPOINT} fail_timeout=5s max_fails=3;
-    server ${WS_ENDPOINT_FAILOVER} backup;
+upstream backend {
+    server ${ENDPOINT} fail_timeout=5s max_fails=3;
+    server ${ENDPOINT_FAILOVER} backup;
 }
 
 server {
     listen 0.0.0.0:${RPC_PORT};
 
     location / {
-        set $upstream rpc_backend;
-        proxy_next_upstream error timeout invalid_header http_500 http_502 http_503 http_504 http_429
-        proxy_pass https://$upstream/ext/bc/C/rpc; #1
+        resolver ${DNS} valid=5s;
+        set $upstream backend;
+        proxy_pass http://$upstream;
         proxy_http_version 1.1;
         proxy_set_header Connection "";
-        proxy_ssl_server_name on;
-        proxy_ssl_name ${RPC_ENDPOINT};            #2
-        proxy_set_header Host ${RPC_ENDPOINT};     #2
 
 
-        #proxy_set_header x-forwarded-host $host;
-        #proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header x-forwarded-host $host;
+        proxy_set_header X-Real-IP $remote_addr;
     }
-}
+  
+  location /ws {
+        resolver ${DNS} valid=5s;
+        set $upstream backend;
+        proxy_pass http://$upstream/ws;
+        proxy_http_version 1.1;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Upgrade $http_upgrade;
 
-server {
-  listen 0.0.0.0:${WS_PORT};
-
-  location / {
-    resolver ${DNS} valid=5s;
-    proxy_pass https://ws_backend/;
-    #proxy_http_version 1.1;
-    #proxy_set_header Connection "upgrade";
-    #proxy_set_header Upgrade $http_upgrade;
-    proxy_ssl_server_name on;
+        proxy_set_header x-forwarded-host $host;
+        proxy_set_header X-Real-IP $remote_addr;
   }
 }
