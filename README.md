@@ -25,5 +25,4 @@ Docker image is built automatically on Dockerhub.
     ```
 
 
-
-
+ docker build . -t eth-proxy-test && docker rm e1 || true  && docker run -d --name e1 -p 8545:8545 -p 8546:8546 -e ENDPOINT=v2.jokeapi.dev -e ENDPOINT_FAILOVER=dog-facts-api.herokuapp.com eth-proxy-test
