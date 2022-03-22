@@ -1,0 +1,21 @@
+server {
+    listen 0.0.0.0:${PORT};
+    set $upstream backend;
+
+    location / {
+        limit_except POST {
+            deny all;
+        }
+        proxy_pass http://$upstream;
+        proxy_set_header Connection "";
+    }
+  
+    location /ws {
+        limit_except POST {
+            deny all;
+        }
+        proxy_pass http://$upstream/ws;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Upgrade $http_upgrade;
+  }
+}

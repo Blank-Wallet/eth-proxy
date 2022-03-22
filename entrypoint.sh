@@ -1,26 +1,24 @@
 #!/bin/bash
 set -eu
 
-export RPC_PORT="${RPC_PORT:-8545}"
-export WS_PORT="${WS_PORT:-8546}"
+export PORT="${PORT:-80}"
 
-export DNS="${DNS:-8.8.8.8}"
+export DNS="${DNS}"
+export BODY_BUFFER_SIZE="${BODY_BUFFER_SIZE:-16k}"
 
-if [[ ! -z "${ENDPOINT:-}"  ]]; then
-    export RPC_ENDPOINT="${ENDPOINT}"
-    export WS_ENDPOINT="${ENDPOINT}"
-fi
+export FAIL_TIMEOUT="${FAIL_TIMEOUT:-10s}"
+export MAX_FAILS="${MAX_FAILS:-1}"
+
+export ENDPOINT="${ENDPOINT}"
+export ENDPOINT_FAILOVER="${ENDPOINT_FAILOVER:-}"
 
 if [[ ! -z "${ENDPOINT_FAILOVER:-}"  ]]; then
-    export RPC_ENDPOINT_FAILOVER="${ENDPOINT_FAILOVER}"
-    export WS_ENDPOINT_FAILOVER="${ENDPOINT_FAILOVER}"
+    envsubst '${ENDPOINT} ${ENDPOINT_FAILOVER} ${FAIL_TIMEOUT} ${MAX_FAILS}' < /etc/nginx/conf.d/failover.conf.template > /etc/nginx/conf.d/default.conf
+else
+    envsubst '${ENDPOINT}' < /etc/nginx/conf.d/non-failover.conf.template > /etc/nginx/conf.d/default.conf
 fi
 
-if [[ -z "${USERNAME:-}" || -z "${PASSWORD:-}" ]]; then
-    envsubst '${RPC_PORT} ${RPC_ENDPOINT} ${WS_PORT} ${WS_ENDPOINT} ${RPC_ENDPOINT_FAILOVER} ${WS_ENDPOINT_FAILOVER} ${DNS}' < /etc/nginx/conf.d/non-auth.conf.template > /etc/nginx/conf.d/default.conf
-else
-    export AUTHORIZATION=$(echo -n "${USERNAME}:${PASSWORD}" | base64 | tr -d \\n)
-    envsubst '${RPC_PORT} ${WS_PORT} ${RPC_ENDPOINT} ${WS_ENDPOINT} ${RPC_ENDPOINT_FAILOVER} ${WS_ENDPOINT_FAILOVER} ${AUTHORIZATION}  ${DNS}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf
-fi
+envsubst '${PORT}' < /etc/nginx/conf.d/server.conf.template >> /etc/nginx/conf.d/default.conf
+envsubst '${DNS} ${BODY_BUFFER_SIZE}' < /etc/nginx/nginx.conf.template > /etc/nginx/nginx.conf
 
 exec "$@"

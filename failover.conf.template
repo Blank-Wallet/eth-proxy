@@ -1,0 +1,4 @@
+upstream backend {
+    server ${ENDPOINT} fail_timeout=${FAIL_TIMEOUT} max_fails=${MAX_FAILS};
+    server ${ENDPOINT_FAILOVER} backup;
+}

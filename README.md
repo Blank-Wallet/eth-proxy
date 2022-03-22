@@ -23,6 +23,7 @@ Docker image is built automatically on Dockerhub.
     ```
     curl 'http://localhost:8545' -H 'Content-Type: application/json' -d '{"jsonrpc": "2.0","method": "eth_blockNumber","params": [],"id": 83}'
     ```
+docker build . -t eth-proxy-test && docker rm -f e1 || true  && docker run -d --name e1 -p 8545:8545 -p 8546:8546 -e ENDPOINT=dog-facts-api.herokuapp.com:443  -e ENDPOINT_FAILOVER=v2.jokeapi.dev:443 eth-proxy-test && docker logs e1 -f
 
 
- docker build . -t eth-proxy-test && docker rm e1 || true  && docker run -d --name e1 -p 8545:8545 -p 8546:8546 -e ENDPOINT=v2.jokeapi.dev -e ENDPOINT_FAILOVER=dog-facts-api.herokuapp.com eth-proxy-test
+docker build . -t eth-proxy-test && docker rm -f e1 || true  && docker run -d --name e1 -p 80:80 -e ENDPOINT_FAILOVER=dog-facts-api.herokuapp.com -e ENDPOINT=v2.jokeapi.dev -e DNS=8.8.8.8 eth-proxy-test && docker logs e1 -f

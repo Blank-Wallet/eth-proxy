@@ -4,8 +4,13 @@ RUN apk --no-cache add tini bash
 COPY ./entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-COPY ./default.conf.template /etc/nginx/conf.d/default.conf.template
-COPY ./non-auth.conf.template /etc/nginx/conf.d/non-auth.conf.template
+COPY ./failover.conf.template /etc/nginx/conf.d/failover.conf.template
+COPY ./non-failover.conf.template /etc/nginx/conf.d/non-failover.conf.template
+COPY ./server.conf.template /etc/nginx/conf.d/server.conf.template
+
+COPY ./nginx.conf.template /etc/nginx/nginx.conf.template
+
+RUN ln -sf /dev/stdout /var/log/nginx/access.log && ln -sf /dev/stderr /var/log/nginx/error.log
 
 ENTRYPOINT ["tini", "--", "/entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
