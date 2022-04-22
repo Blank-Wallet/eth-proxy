@@ -1,5 +1,5 @@
 # eth-proxy
-Simple proxy for ethereum nodes.
+Simple proxy for ethereum nodes to handle the authentication and endpoints. It exposes the '/' for RPC and optionally '/ws' for web sockets. Also it adds a customizable endpoint called "/status" used as a health check to know if the nodes was rate limited by sending a POST with a node method (ideally that doesn't consume compute units).
 The proxy adds Authorization header to all RPC/WS requests (optional).
 
 # Usage
