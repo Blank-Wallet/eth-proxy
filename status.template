@@ -1,0 +1,16 @@
+location /status {
+    access_log off;
+    
+    content_by_lua_block {
+        ngx.req.set_header("Content-Type", "application/json")
+        local res = ngx.location.capture(
+                                         '/',
+                                         { 
+                                             method = ngx.HTTP_POST, 
+                                             body = '{"jsonrpc": "2.0","method": "${STATUS_METHOD}"}' 
+                                         }
+                                        )
+        ngx.status = res.status
+        ngx.exit(ngx.OK)
+    }
+}

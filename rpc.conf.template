@@ -1,0 +1,10 @@
+server {
+
+  include /etc/nginx/conf.d/common.template;
+  
+  ${AUTHORIZATION_HEADER}
+
+  include /etc/nginx/conf.d/rpc.template;
+  
+  include /etc/nginx/conf.d/status.template;
+}
