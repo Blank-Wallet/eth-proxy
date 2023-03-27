@@ -1,5 +1,0 @@
-location /ws {
-  proxy_pass ${WS_ENDPOINT};
-  proxy_set_header Connection "upgrade";
-  proxy_set_header Upgrade $http_upgrade;
-}
