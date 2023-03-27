@@ -1,5 +1,4 @@
 listen 0.0.0.0:${PORT};
-resolver ${DNS} valid=5s;
 proxy_http_version 1.1;
 proxy_ssl_server_name on;
 server_tokens off;

@@ -1,4 +1,5 @@
 location / {
-  proxy_pass ${RPC_ENDPOINT};
+  proxy_pass ${ENDPOINT};
   proxy_set_header Connection "";
+  ${AUTHORIZATION}
 }

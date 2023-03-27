@@ -1,0 +1,13 @@
+version: "2"
+
+services:
+  proxy:
+    build:
+      context: .
+    restart: always
+    ports:
+      - 8080:80
+    environment:
+      ENDPOINT: https://pro-api.coingecko.com/api/v3/
+      AUTHORIZATION_HEADER: x-cg-pro-api-key
+      AUTHORIZATION_HEADER_VALUE: test
